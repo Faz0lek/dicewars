@@ -5,5 +5,3 @@ __pycache__/
 *.log
 *.out
 *.synctex.gz
-*.pickle
-!/dicewars/supp_xkoste12/data/*.pickle
