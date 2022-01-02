@@ -11,49 +11,12 @@ from dicewars.client.ai_driver import (BattleCommand, EndTurnCommand,
 from dicewars.client.game.area import Area
 from dicewars.client.game.board import Board
 from dicewars.supp_xkoste12.model import NeuralNetwork
+from dicewars.ai.xkoste12.utils import serialize_board_full
 
 import torch
 
-MODEL_PATH = r"./dicewars/supp_xkoste12/model.pth"
 
-def sort_by_first_and_get_second(dictionary: dict) -> list:
-    return [pair[1] for pair in sorted(dictionary.items(), key=lambda pair: pair[0])]
-
-
-def serialize_neighbourhoods(board: Board) -> List[int]:
-    areas_n = len(board.areas)
-    neighbourhood_dict = {(x + 1, y + 1): 0 for x in range(areas_n) for y in range(x + 1, areas_n)}
-    for area in board.areas.values():
-        for neighbour_name in area.get_adjacent_areas_names():
-            index = (area.name, neighbour_name)
-            if index in neighbourhood_dict:
-                neighbourhood_dict[index] = 1
-    return sort_by_first_and_get_second(neighbourhood_dict)
-
-
-def serialize_board_without_neighbours(board: Board, current_player_name: int, number_of_players: int = 4) -> List[int]:
-    owner_dict = {}
-    dice_dict = {}
-
-    for area in board.areas.values():
-        owner_dict[area.name] = area.owner_name
-        dice_dict[area.name] = area.dice
-
-    flat_owners = sort_by_first_and_get_second(owner_dict)
-    flat_dice = sort_by_first_and_get_second(dice_dict)
-
-    largest_regions = [max([len(reg) for reg in board.get_players_regions(player)], default=0)
-                       for player in range(1, number_of_players + 1)]
-
-    current_player_one_hot = [int(player == current_player_name)
-                              for player in range(1, number_of_players + 1)]
-
-    return current_player_one_hot + flat_owners + flat_dice + largest_regions
-
-
-def serialize_board_full(board: Board, current_player_name: int, number_of_players: int = 4) -> List[int]:
-    return serialize_board_without_neighbours(board, current_player_name, number_of_players) + serialize_neighbourhoods(board)
-
+MODEL_PATH = r"./dicewars/ai/xkoste12/model.pth"
 
 class AI:
     """Naive player agent
@@ -80,7 +43,7 @@ class AI:
         self.model.load_state_dict(torch.load(MODEL_PATH))
         self.model.eval()
 
-        self.MAXN_MAX_DEPTH = 1
+        self.MAXN_MAX_DEPTH = 3
 
     def ai_turn(self, board, nb_moves_this_turn, nb_transfers_this_turn, nb_turns_this_game, time_left):
         """AI agent's turn (a single action)
@@ -103,8 +66,6 @@ class AI:
         else:
             self.MAXN_MAX_DEPTH = 1
 
-        self.logger.debug(f"Time Left: {time_left}.")
-
         self.logger.debug(f"It's my turn now. On turn: {nb_turns_this_game}.")
 
         self.board = board
@@ -124,14 +85,15 @@ class AI:
         return EndTurnCommand()
 
     def get_best_move(self, board: Board, transfers: int) -> Tuple[int, int]:
-        eval, move = self.maxn(board, transfers, self.MAXN_MAX_DEPTH)
+        transfers_mutable = [transfers]
+        eval, move = self.maxn(board, transfers_mutable, self.MAXN_MAX_DEPTH)
         self.logger.debug(f"Found best move: eval={eval}")
         return move
 
-    def maxn(self, board: Board, transfers: int, depth: int) -> Tuple[List[float], Tuple[int, int]]:
+    def maxn(self, board: Board, transfers: List[int], depth: int) -> Tuple[List[float], Tuple[int, int]]:
         moves = list(possible_attacks(board, self.player_name))
 
-        if transfers < self.max_transfers: # Consider transfers only if we are still allowed to do them
+        if transfers[0] < self.max_transfers: # Consider transfers only if we are still allowed to do them
             moves = moves + list(self.possible_transfers(board))
 
         # TODO: We have to check if the game is over when simulating, I think, or maybe not, it seems it's working like this
@@ -145,7 +107,6 @@ class AI:
         new_evaluation = evaluation
 
         for src, tgt in moves:
-            # TODO - Nema smysl uvazovat transfer na policka ktere maji 8 kostek.
             if tgt.get_owner_name() != self.player_name:
                 if probability_of_successful_attack(board, src.get_name(), tgt.get_name()) < 0.5:
                     continue
@@ -157,17 +118,18 @@ class AI:
 
             new_evaluation, _ = self.maxn(new_board, new_transfers, depth - 1)
 
-            if new_evaluation[self.player_name - 1] > evaluation[self.player_name - 1] or new_evaluation[self.player_name - 1] == 1:
+            index = self.players_order.index(self.player_name)
+            if new_evaluation[index] > evaluation[index]:
                 move = (src.get_name(), tgt.get_name())
 
         return new_evaluation, move
 
-    def simulate_move(self, board: Board, src_name: int, tgt_name: int, transfers: int) -> None:
+    def simulate_move(self, board: Board, src_name: int, tgt_name: int, transfers: List[int]) -> None:
         src = board.get_area(src_name)
         tgt = board.get_area(tgt_name)
 
         if tgt.get_owner_name() == self.player_name:  # Simulating a transfer
-            transfers = transfers + 1
+            transfers[0] += 1
             amount = tgt.get_dice() + src.get_dice() - 1
 
             if amount >= 8:
