@@ -4,6 +4,7 @@ import pickle
 from matplotlib import pyplot as plt
 
 DATA_PATH = "../data/"
+IMG_PATH = "../../../doc/img/"
 
 
 def parse_pickle(path):
@@ -51,7 +52,7 @@ if __name__ == "__main__":
     plt.legend()
     plt.tight_layout()
     # plt.show()
-    plt.savefig("../win_prob.pdf")
+    plt.savefig(os.path.join(IMG_PATH, "win_prob.pdf"))
 
     plt.clf()
     plt.hist(game_lengths, density=False, bins="auto")
@@ -60,4 +61,4 @@ if __name__ == "__main__":
     plt.xlabel("Počet tahů")
     plt.tight_layout()
     # plt.show()
-    plt.savefig("../game_len_hist.pdf")
+    plt.savefig(os.path.join(IMG_PATH, "game_len_hist.pdf"))
