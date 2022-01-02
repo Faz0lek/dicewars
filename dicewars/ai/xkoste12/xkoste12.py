@@ -10,13 +10,12 @@ from dicewars.client.ai_driver import (BattleCommand, EndTurnCommand,
                                        TransferCommand)
 from dicewars.client.game.area import Area
 from dicewars.client.game.board import Board
-from dicewars.supp_xkoste12.model import NeuralNetwork
-from dicewars.ai.xkoste12.utils import serialize_board_full
+from dicewars.ai.xkoste12.utils import (serialize_board_full, NeuralNetwork)
 
 import torch
 
 
-MODEL_PATH = r"./dicewars/ai/xkoste12/model.pth"
+MODEL_PATH = r"dicewars/ai/xkoste12/model.pth"
 
 class AI:
     def __init__(self, player_name, board, players_order, max_transfers):
@@ -35,7 +34,7 @@ class AI:
         self.board = board
         
         self.model = NeuralNetwork()
-        self.model.load_state_dict(torch.load(MODEL_PATH))
+        self.model.load_state_dict(torch.load(MODEL_PATH, map_location="cpu"))
         self.model.eval()
 
         self.MAXN_MAX_DEPTH = 3

@@ -1,6 +1,12 @@
 from dicewars.client.game.board import Board
 from typing import List, Tuple
 
+import torch.nn as nn
+import torch.nn.functional as F
+
+INPUT_SIZE = 637
+OUTPUT_SIZE = 4
+
 def sort_by_first_and_get_second(dictionary: dict) -> list:
     return [pair[1] for pair in sorted(dictionary.items(), key=lambda pair: pair[0])]
 
@@ -38,3 +44,24 @@ def serialize_board_without_neighbours(board: Board, current_player_name: int, n
 
 def serialize_board_full(board: Board, current_player_name: int, number_of_players: int = 4) -> List[int]:
     return serialize_board_without_neighbours(board, current_player_name, number_of_players) + serialize_neighbourhoods(board)
+
+class NeuralNetwork(nn.Module):
+    def __init__(self):
+        super(NeuralNetwork, self).__init__()
+
+        self.fc1 = nn.Linear(INPUT_SIZE, 64)
+        self.dropout1 = nn.Dropout(p=0.5)
+        self.fc2 = nn.Linear(64, 32)
+        self.dropout2 = nn.Dropout(p=0.5)
+        self.fc3 = nn.Linear(32, OUTPUT_SIZE)
+
+    def forward(self, x):
+        x = self.fc1(x)
+        x = F.relu(x)
+        x = self.dropout1(x)
+        x = self.fc2(x)
+        x = F.relu(x)
+        x = self.dropout2(x)
+        x = self.fc3(x)
+
+        return x
