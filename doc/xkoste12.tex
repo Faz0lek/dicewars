@@ -38,10 +38,10 @@
 		V \texttt{MiniMax} je ohodnocením stavů jedno číslo. Jeden hráč se snaží číslo maximalizovat, druhý naopak minimalizovat. Pokud přidáme hráčů více, jedno číslo pro ohodnocení stavů nám už nestačí. Použije se proto $n$-tice, kde $n$ značí počet hráčů. Každý hráč se poté snaží maximalizovat své vlastní číslo. To je ilustrováno na obrázku \ref{fig:maxn}. V praxi to funguje tak, že prohledáváme pouze do omezené hloubky. Všechny stavy v maximální hloubce ohodnotíme heuristickou funkcí a následně je každému rodičovskému stavu přiřazeno odpovídající ohodnocení vzhledem k tomu, který hráč je na řadě.
 		
 		\begin{figure}[h]
-			\label{fig:maxn}
 			\centering
 			\includegraphics[scale=0.5]{maxn.png}
 			\caption{Ukázka algoritmu \texttt{$Max^n$} pro tři hráče. Převzato z \url{https://slideplayer.com/slide/15266490/}}
+			\label{fig:maxn}
 		\end{figure}
 		
 	\subsection{Implementace}
@@ -65,13 +65,13 @@
 		
 		Vytvořená neuronová síť se skládá celkem z tří lineární vrstev a dvou \texttt{dropout} vrstev. První dvě lineární vrstvy používají aktivační funkci \texttt{ReLU}. Pravděpodobnost v \texttt{dropout} vrstvách byla nastavena na hodnotu $0.5$. Popis architektury získaný pomocí pomocné funkce knihovny \texttt{PyTorch} je ilustrován na \ref{fig:model}.
 		
-		Při implementaci a experimentaci s modelem jsme narazili na problém ohledně aktivační funkce poslední lineární vrstvy. Nejprve jsme zvolili aktivační funkci \texttt{softmax}, aby výsledná $n$-tice reprezentovala pravděpodobnost výhry každého hráče. Stávalo se ale, že funkce velice často začala vracet $n$-tice s jedním elementem s hodnotou $1$ a ostatní v nule. Pokud toto nastalo, nebyli jsme schopni vybrat lepší tah. Stejný problém nastal u aktivační funkce \texttt{log\_softmax}. Nakonec jsme se rozhodli nechat poslední vrstvu čistě lineární, bez jakékoliv aktivační funkce. Výstupem je tak $n$-tice, kde každý prvek představuje skóre každého hráče. Tato hodnota není nijak omezena shora ani zdola a nikdy se tak nestane, že bychom nebyli schopni najít lepší tah.
+		Při implementaci a experimentaci s modelem jsme narazili na problém ohledně aktivační funkce poslední lineární vrstvy. Nejprve jsme zvolili aktivační funkci \texttt{softmax}, aby výsledná $n$-tice reprezentovala\\pravděpodobnost výhry každého hráče. Stávalo se ale, že funkce velice často začala vracet $n$-tice s jedním elementem s hodnotou $1$ a ostatní v nule. Pokud toto nastalo, nebyli jsme schopni vybrat lepší tah. Stejný problém nastal u aktivační funkce \texttt{log\_softmax}. Nakonec jsme se rozhodli nechat poslední vrstvu čistě lineární, bez jakékoliv aktivační funkce. Výstupem je tak $n$-tice, kde každý prvek představuje skóre každého hráče. Tato hodnota není nijak omezena shora ani zdola a nikdy se tak nestane, že bychom nebyli schopni najít lepší tah.
 		
 		\begin{figure}[h]
-			\label{fig:model}
 			\centering
 			\includegraphics[scale=0.5]{model.png}
 			\caption{Architektura modelu neuronové sítě.}
+			\label{fig:model}
 		\end{figure}
 	
 	\subsection{Serializace stavu hry}
@@ -95,9 +95,16 @@
 		Jako vstup neuronové sítě se používá jednorozměrné pole složené z hodnot popisující stav herní plochy rozšířené o pole popisující sousednost herních políček. Vstupní pole má tedy celkem 637 prvků, čímž je kompletně popsán aktuální stav hry. Vítěz je v one-hot kódování použit jako výstup neuronové sítě při trénování. Funkce pro serializaci při běhu hry jsou uloženy v souboru \texttt{utils.py}.
 	
 		\subsection{Generování trénovacích dat}
-		Data pro trénování byla vygenerována pomocí upravené verze hry DiceWars, která se nachází v adresáři \texttt{dicewars/supp\_xkoste12/generator/}. Většina důležitých změn byla provedena v souboru\\\texttt{dicewars/server/game.py}, kde bylo přidáno zaznamenávání stavů hry na začáku hry a následně po každém tahu každého hráče. Tyto stavy jsou na konci hry doplněny o pole popisující sousednost herních políček a informaci o výherci dané hry zakódované v one-hot formátu. Výsledná data jsou uložena na disk do adresáře \texttt{dicewars/supp\_xkoste12/data/} v populárním Pythonovém serializačním formátu \emph{pickle}. Přesnější popis formátu serializovaných dat se nachází v sekci \ref{serialization}.
+		Data pro trénování byla vygenerována pomocí upravené verze hry DiceWars, která se nachází v adresáři \texttt{dicewars/supp\_xkoste12/generator/}. Většina důležitých změn byla provedena v souboru\\\texttt{dicewars/server/game.py}, kde bylo přidáno zaznamenávání stavů hry na začáku hry a následně po každém tahu každého hráče. Tyto stavy jsou na konci hry doplněny o pole popisující sousednost herních políček a informaci o výherci dané hry zakódované v one-hot formátu. Výsledná data jsou uložena na disk do adresáře \texttt{dicewars/supp\_xkoste12/data/} v populárním Pythonovém serializačním formátu \emph{pickle}. Přesnější popis formátu serializovaných dat se nachází v sekci \ref{serialization}. Histogram délky vygenerovaných her použitých při trénování lze vidět na obrázku \ref{fig:gamelen}.
 		
 		Pro spuštění generátoru je nutné být v jeho kořenovém adresáři\\(\texttt{dicewars/supp\_xkoste12/generator/}), spustit skript \texttt{install.sh} a aktivovat virtuální prostředí příkazem \texttt{source path.sh}. Samotný generátor se spouští v podobě skriptu \texttt{gen.sh}. Pro zastavení tohoto skriptu stačí vytvořit v kořenovém adresáři generátoru soubor s názvem \texttt{stop}, například příkazem \texttt{touch stop}.
+		
+		\begin{figure}[h]
+			\centering
+			\includegraphics[scale=0.7]{game_len_hist.pdf}
+			\caption{Histogram délky her.}
+			\label{fig:gamelen}
+		\end{figure}
 	
 	\subsection{Trénování modelu}
 		Pro natrénování modelu bylo vygenerováno celkem $2250$ her, ze kterých jsme získali $638 255$ různých stavů herní plochy. Tato data byla následně rozdělena na trénovací a validační datovou sadu. Trénovací sada obsahuje 80 \% z původních dat. Validační sata zbylých 20 \%. Bylo nutné vytvořit třídu \texttt{GameDataSet}, která implementuje funkce \texttt{\_\_len\_\_()} a \texttt{\_\_getitem\_\_()}. Tyto funkce poté používá třída \texttt{torch.DataLoader}, která data zamíchá a rozdělí do skupin o velikosti $256$.
@@ -105,11 +112,11 @@
 		Jako optimalizační algoritmus jsme zvolili algoritmus \texttt{Adam} s \texttt{learning rate} s hodnotou $0.01$. Pro \texttt{loss} funkci jsme zvolili \texttt{CrossEntropy}. Počet epoch trénování jsme nastavili na $1000$ s tím, že nový model se uloží pouze tehdy, pokud validační loss dosáhne nového minima. Nejlepší model jsme získali v epoše číslo $330$. Průběh loss funkce pro trénovací i validační data lze vidět na obrázku \ref{fig:loss}. Veškeré trénování probíhalo na stolním počítači s grafickou kartou nVidia RTX 3070.
 		
 		\begin{figure}[h]
-			\label{fig:loss}
 			\centering
 			\includegraphics[scale=0.5]{training_loss.pdf}
 			\includegraphics[scale=0.5]{valid_loss.pdf}
 			\caption{Průběh trénovací a validační loss funkce během trénování.}
+			\label{fig:loss}
 		\end{figure}
 	
 	\subsection{Použití modelu}
@@ -133,20 +140,20 @@
 	
 	Výsledná umělá inteligence dosahuje výsledků podobných jako implementace v modulu \texttt{dt}, avšak na implementace v modulu \texttt{kb} nestačí. Výsledek turnaje o sto hrách lze vidět na obrázku \ref{fig:winrate}.
 	
-	\begin{figure}[h]
-		\label{fig:winrate}
+	\begin{figure}[ht]
 		\centering
 		\includegraphics[scale=0.7]{winrate.png}
 		\caption{Výsledek turnaje o sto hrách.}
+		\label{fig:winrate}
 	\end{figure}
 	
 	Při testování jsme si všimli zajímavé věci. Pořadí hráčů značně ovlivňuje jejich šance na výhru. Hráč, který začíná, je na tom vždy lépe než druhý, ten lépe než třetí a tak dále. To lze vidět na obrázku \ref{fig:order}. Spuštění velkého množství her by mělo tuto skutečnost vyvážit, ale člověk musí být opatrný při spouštění malého množství při testování funkčnosti.
 	
-	\begin{figure}[h]
-		\label{fig:order}
+	\begin{figure}[ht]
 		\centering
 		\includegraphics[scale=0.65]{win_prob.pdf}
 		\caption{Graf zobrazující závislost šance na výhru na pořadí hráčů.}
+		\label{fig:order}
 	\end{figure}
 	
 \end{document}
