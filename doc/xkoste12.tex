@@ -41,7 +41,7 @@
 			\label{fig:maxn}
 			\centering
 			\includegraphics[scale=0.5]{maxn.png}
-			\caption{Ukázka algoritmu \texttt{$Max^n$} pro tři hráče.}
+			\caption{Ukázka algoritmu \texttt{$Max^n$} pro tři hráče. Převzato z \url{https://slideplayer.com/slide/15266490/}}
 		\end{figure}
 		
 	\subsection{Implementace}
@@ -131,7 +131,14 @@
 	\section{Závěr}
 	V projektu byla implementována umělá inteligence pro hru Dicewars využívající algoritmus \texttt{$Max^n$} s měnící se maximální hloubkou dle zbývajícího času. Dále byla vytvořena a natrénována neuronová síť pro ohodnocení jednotlivých stavů. Vytvoření modelu zahrnovalo úpravu původní verze hry pro vygenerování trénovacích dat, trénování modelu a jeho integraci do prohledávání stavového prostoru.
 	
-	Výsledná umělá inteligence dosahuje výsledků podobných jako implementace v modulu \texttt{dt}, avšak na implmentace v modulu \texttt{kb} nestačí.
+	Výsledná umělá inteligence dosahuje výsledků podobných jako implementace v modulu \texttt{dt}, avšak na implementace v modulu \texttt{kb} nestačí. Výsledek turnaje o sto hrách lze vidět na obrázku \ref{fig:winrate}.
+	
+	\begin{figure}[h]
+		\label{fig:winrate}
+		\centering
+		\includegraphics[scale=0.7]{winrate.png}
+		\caption{Výsledek turnaje o sto hrách.}
+	\end{figure}
 	
 	Při testování jsme si všimli zajímavé věci. Pořadí hráčů značně ovlivňuje jejich šance na výhru. Hráč, který začíná, je na tom vždy lépe než druhý, ten lépe než třetí a tak dále. To lze vidět na obrázku \ref{fig:order}. Spuštění velkého množství her by mělo tuto skutečnost vyvážit, ale člověk musí být opatrný při spouštění malého množství při testování funkčnosti.
 	

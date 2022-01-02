@@ -1,0 +1,1 @@
+from dicewars.ai.xkoste12.xkoste12 import AI
