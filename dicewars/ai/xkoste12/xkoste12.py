@@ -19,11 +19,6 @@ import torch
 MODEL_PATH = r"./dicewars/ai/xkoste12/model.pth"
 
 class AI:
-    """Naive player agent
-
-    This agent performs all possible moves in random order
-    """
-
     def __init__(self, player_name, board, players_order, max_transfers):
         """
         Keyword arguments:
@@ -95,8 +90,6 @@ class AI:
 
         if transfers[0] < self.max_transfers: # Consider transfers only if we are still allowed to do them
             moves = moves + list(self.possible_transfers(board))
-
-        # TODO: We have to check if the game is over when simulating, I think, or maybe not, it seems it's working like this
 
         if not depth or not moves:  # We reached max depth or ran out of possible moves, return just the evaluation
             return self.evaluate_state_nn(board), None

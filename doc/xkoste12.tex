@@ -7,6 +7,9 @@
 \usepackage[unicode]{hyperref}
 \hypersetup{colorlinks = true, hypertexnames = false}
 
+\usepackage{graphicx}
+\graphicspath{ {./img/} }
+
 \begin{document}
 	\begin{titlepage}
 		\begin{center}
@@ -25,18 +28,20 @@
 	\end{titlepage}
 
 	\section{Úvod}
-		"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+		Cílem tohoto projektu je vytvořit umělou inteligenci pro hru Dicewars\footnote{\url{https://github.com/ibenes/dicewars}}. Dicewars je tahová hra pro dva a více hráčů s úplnou informací o prostředí (nebereme-li v potaz rezervy) a s nedeterministickým výsledkem útoků. V rámci projektu uvažujeme pouze hry čtyř hráčů. Dokumentace je rozdělena do dvou hlavních částí. První, kapitola \ref{section:search}, pojednává o prohledávání stavového prostoru. Kapitola \ref{section:nn} popisuje heuristickou funkci využitou k ohodnocování stavů hry.
 		
 	\section{Prohledávání stavového prostoru}
+	\label{section:search}
 		"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
 		
-	\subsection{Algoritmus MAX N}
+	\subsection{Algoritmus $Max^n$}
 		"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
 	
 	\subsection{Implementace}
 		"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in 	culpa qui officia deserunt mollit anim id est laborum."
 	
 	\section{Neuronová síť pro aproximaci heuristické funkce}
+	\label{section:nn}
 		"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
 	
 	\subsection{Serializace stavu hry}
@@ -47,6 +52,9 @@
 	
 	\subsection{Trénování modelu}
 		"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+		
+		\includegraphics[scale=0.5]{training_loss.pdf}
+		\includegraphics[scale=0.5]{valid_loss.pdf}
 	
 	\subsection{Použití modelu}
 		"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
